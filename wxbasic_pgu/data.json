@@ -1,4 +1,4 @@
-var data_json={
+var data_json = {
   "★생성AI 사이트" : {
     "바로가기 링크" : [
       { "분류" : "대화형AI", "서비스명" : "ChatGPT", "링크" : "https://chatgpt.com/" },
