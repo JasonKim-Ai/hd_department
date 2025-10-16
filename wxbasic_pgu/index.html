@@ -11,22 +11,18 @@
     <script src="./method.js"></script> 
 </head>
 <script>
-// JSON 파일을 안전하게 불러오기 위해 jQuery AJAX를 사용합니다.
 $(document).ready(function(){
     // data.json 파일을 불러옵니다.
     $.getJSON('data.json', function(data) {
-        // 데이터 로드 성공 후, 왼쪽 메뉴를 만듭니다.
         makeLeftSide(data);
         console.log("Data loaded successfully.");
 
         $(document).on("click", ".prompt_button", function(){
             $(".prompt_button").css({"color" : "", "background":"", "font-weight":""});
-            // data 변수는 이제 전역 스코프가 아닌 이 콜백 함수 내에 있습니다.
-            // 버튼 클릭 시 데이터를 찾기 위한 로직을 수정했습니다.
+            
             let chapterKey = $(this).attr("chapter");
             let promptName = $(this).text();
             
-            // 데이터가 있는지 확인하고 오른쪽 화면에 보여줍니다.
             if (data[chapterKey] && data[chapterKey][promptName]) {
                 var prompt = data[chapterKey][promptName];
                 showRightSide(prompt);
@@ -39,7 +35,6 @@ $(document).ready(function(){
         });
         
     }).fail(function(jqxhr, textStatus, error) {
-        // 데이터 로드 실패 시 콘솔에 에러를 표시합니다.
         let err = textStatus + ", " + error;
         console.error( "Request Failed: " + err );
         alert("🚨 data.json 파일을 불러오는 데 실패했습니다. 파일이 같은 폴더에 있는지 확인해주세요.");
@@ -47,7 +42,6 @@ $(document).ready(function(){
 
 
     $(document).on("click", ".copy_icon", function(){
-        // br2nl 함수는 method.js에 정의되어 있어야 합니다.
         copyToClipboard($(this).prev().html().br2nl());
     });
 });
