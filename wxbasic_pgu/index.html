@@ -1,60 +1,56 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>WX기초과정 실습 프롬프트</title>
-    <link rel="stylesheet" href="../style.css"> 
-    <link href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:400,700" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
-    <script src="data.js"></script> 
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WX기초과정 실습 프롬프트</title>
+<link rel="stylesheet" href="../style.css">
+<link href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:400,700" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+<script src="../method.js"></script>
 </head>
+<body oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
+<div id="container">
+<div id="leftside"></div>
+<div id="rightside">
+<div id="rightSideWrapper">
+<div><img src="../logo_wx.svg"></div>
+<div>왼쪽 메뉴에서 내용을 클릭해 주세요.</div>
+</div>
+</div>
+</div>
+
 <script>
 $(document).ready(function(){
-    // data.json 파일을 불러옵니다.
-    $.getJSON('data.json', function(data) {
-        makeLeftSide(data);
-        console.log("Data loaded successfully.");
-
-        $(document).on("click", ".prompt_button", function(){
-            $(".prompt_button").css({"color" : "", "background":"", "font-weight":""});
-            
-            let chapterKey = $(this).attr("chapter");
-            let promptName = $(this).text();
-            
-            if (data[chapterKey] && data[chapterKey][promptName]) {
-                var prompt = data[chapterKey][promptName];
-                showRightSide(prompt);
-            } else {
-                showRightSide("내용을 찾을 수 없습니다.");
+    // JSON 파일을 비동기로 로드
+    fetch('data.json')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('data.json 파일을 찾을 수 없습니다.');
             }
+            return response.json();
+        })
+        .then(data => {
+            makeLeftSide(data);
             
-            $(this).css({"color": "white", "background": "rgb(25 183 255)", "font-weight":"bold"});
-            $("html").animate({scrollTop:0}, 500);
+            $(document).on("click", ".prompt_button", function(){
+                $(".prompt_button").css({"color" : "", "background":"", "font-weight":""});
+                var prompt = data[$(this).attr("chapter")][$(this).text()];
+                showRightSide(prompt);
+                $(this).css({"color": "white", "background": "rgb(25 183 255)", "font-weight":"bold"});
+                $("html").animate({scrollTop:0}, 500);
+            });
+            
+            $(document).on("click", ".copy_icon", function(){
+                copyToClipboard($(this).prev().html().br2nl());
+            });
+        })
+        .catch(error => {
+            console.error('데이터 로딩 실패:', error);
+            $('#rightside').html('<div style="padding: 20px; color: red;">데이터 파일을 불러오는데 실패했습니다. 파일 경로를 확인해주세요.</div>');
         });
-        
-    }).fail(function(jqxhr, textStatus, error) {
-        let err = textStatus + ", " + error;
-        console.error( "Request Failed: " + err );
-        alert("🚨 data.json 파일을 불러오는 데 실패했습니다. 파일이 같은 폴더에 있는지 확인해주세요.");
-    });
-
-
-    $(document).on("click", ".copy_icon", function(){
-        copyToClipboard($(this).prev().html().br2nl());
-    });
 });
 </script>
-<body oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
-    <div id="container">
-        <div id="leftside"></div> 
-        <div id="rightside">
-            <div id="rightSideWrapper">
-                <div><img src="../logo_wx.svg" alt="Logo"></div> 
-                <div>왼쪽 메뉴에서 내용을 클릭해 주세요.</div>
-            </div>
-        </div>
-    </div>
 </body>
 </html>
